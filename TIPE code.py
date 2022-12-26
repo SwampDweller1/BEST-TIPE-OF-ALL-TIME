@@ -126,7 +126,7 @@ while run:                                                                      
         ifcollide_running(L)
         window.blit(i.image,i.rect)
         interactions_pt(L)
-        repulsion_pt(L)
+        """repulsion_pt(L)"""
     k=k+1
     for i in M:                                                                 # Gestion des points d'intérêt au cours de la simulation
         window.blit(i.image,i.rect)
