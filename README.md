@@ -9,6 +9,6 @@ Commande Git :
 (à écrire en cas de merge une seule fois pour tout le projet (permet de faire des choses obscure mais tkt)
 - git merge 
 (permet de faire un merge donc fusion des codes ne pas utiliser car très compliqué à comprendre)
-- git config --global user.name "Pseud"
+- git config --global user.name "Pseudo"
 - git config --global user.email TonMail
 (pour configurer ton git afin de pouvoir push à écrire dans le terminal de VScode)
