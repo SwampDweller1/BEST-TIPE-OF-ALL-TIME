@@ -114,7 +114,6 @@ def repulsion_pt(L):                                                            
 
 """            if i.rect.x != L[j].rect.x and i.rect.y != L[j].rect.y:"""
 
-#uy
 
 ##----------------------- SIMULATION ------------------------##
 k=0
