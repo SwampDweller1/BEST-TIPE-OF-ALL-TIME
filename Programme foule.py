@@ -3,6 +3,8 @@ import numpy as np
 from pygame.locals import *
 from random import *
 
+#test
+
 ##-------------------------------- INITIALISATION --------------------------------##
 
 pygame.init()
