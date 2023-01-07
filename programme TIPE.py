@@ -61,7 +61,7 @@ class Player(pygame.sprite.Sprite):                                             
         return  image_rouge.get_at((self.rect.x, self.rect.y))==(255, 0, 0, 255)
 
 ##----------------------- FONCTIONS ----------------------------##
-image = pygame.image.load("Shibuya.png")                                        # Importation image de fond
+image = pygame.image.load("Shibuya.PNG")                                        # Importation image de fond
 image_rouge = pygame.image.load("Shibuyared.png")                               # Importation image rouge
 pixel = np.zeros((587 , 850))                                                   # Taille de l'image
 for i in range(359):
@@ -125,7 +125,27 @@ text = smallfont.render('Quitter' , True , (255,255,255))                       
 
 ##----------------------- INITIALISATION DES GRAPHES ------------------------##
 
+from datetime import datetime
+from matplotlib import pyplot
+from matplotlib.animation import FuncAnimation
+from random import randrange
 
+x_data, y_data = [], []
+
+figure = pyplot.figure()
+line, = pyplot.plot_date(x_data, y_data, '-')
+
+def update(frame):
+    x_data.append(datetime.now())
+    y_data.append(randrange(0, 100))
+    line.set_data(x_data, y_data)
+    figure.gca().relim()
+    figure.gca().autoscale_view()
+    return line,
+
+animation = FuncAnimation(figure, update, interval=200)
+
+pyplot.show()
 
 
 ##----------------------- SIMULATION ------------------------##
