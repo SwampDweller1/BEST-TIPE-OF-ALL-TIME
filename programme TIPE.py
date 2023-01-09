@@ -2,7 +2,8 @@ import pygame
 import numpy as np
 from pygame.locals import *
 from random import *
-import matplotlib.pyplot as plt
+import matplotlib.pyplot as pyplot
+from matplotlib.animation import FuncAnimation
 
 ##----------------- FONCTIONS PREALABLES --------------------##
 def testx(a):
@@ -34,8 +35,8 @@ class PTI(pygame.sprite.Sprite):                                                
 class Player(pygame.sprite.Sprite):                                             #Création de la classe des piétons
     def __init__(self):
         super().__init__()
-        state=randint(0,1)
-        if state==0:
+        self.state=randint(0,1)
+        if self.state==0:
             self.image = pygame.image.load('cerclePIETON.png')
         else:
             self.image = pygame.image.load('cerclePIETONinfecte.png')
@@ -45,15 +46,11 @@ class Player(pygame.sprite.Sprite):                                             
 
     def deplacement(self):
         a=self.rect.x-M[0].rect.x
-        b=self.rect.y-M[0].rect.y                                               # Gestion des mouvements
-        if abs(a)<3 and abs(b)<3:                                               # Si le point est assez proche il s'arrête
-            self.rect.x=self.rect.x
-            self.rect.y=self.rect.y
-        else:                                                                   # Mvt si le point d'intérêt n'est pas atteint
-            vitesse = b/a
-            p,q=direction(L,M)
-            self.rect.x += testx(p)
-            self.rect.y += testx(p)*vitesse
+        b=self.rect.y-M[0].rect.y                                               # Gestion des mouvement                                             
+        vitesse = b/a                   
+        p,q=direction(L,M)
+        self.rect.x += testx(p)
+        self.rect.y += testx(p)*vitesse
                                                                                 # utilisation du modèle des fces centrales
     def draw(self):
         self.draw.player()                                                      # Dessiner le piéton
@@ -61,6 +58,7 @@ class Player(pygame.sprite.Sprite):                                             
         return  image_rouge.get_at((self.rect.x, self.rect.y))==(255, 0, 0, 255)
 
 ##----------------------- FONCTIONS ----------------------------##
+
 image = pygame.image.load("Shibuya.PNG")                                        # Importation image de fond
 image_rouge = pygame.image.load("Shibuyared.png")                               # Importation image rouge
 pixel = np.zeros((587 , 850))                                                   # Taille de l'image
@@ -106,7 +104,7 @@ def direction(L,M):                                                             
     for i in range(len(L)):
         a=L[i].rect.x-u.rect.x
         b=L[i].rect.y-u.rect.y
-        if np.abs(a)<10 and np.abs(b)<10:                                         #Supprime le piéton dès qu'il est trop proche du PTI
+        if np.abs(a)<10 and np.abs(b)<10:                                         #Déplacer le piéton en quarantaine dès qu'il est trop proche du PTI
             (L[i].rect.x,L[i].rect.y)=(randint(700,830),randint(20,130))
     return a,b
 direction(L,M)
@@ -123,27 +121,19 @@ smallfont = pygame.font.SysFont('stencil',25)
 text = smallfont.render('Quitter' , True , (255,255,255))                       #Créer un bouton quitter
 
 
-##----------------------- INITIALISATION DES GRAPHES ------------------------##
+##----------------------- CONTAGION VIRUS ------------------------##
 
 from datetime import datetime
-from matplotlib import pyplot
-from matplotlib.animation import FuncAnimation
-from random import randrange
-
-x_data, y_data = [], []
-
-figure = pyplot.figure()
-line, = pyplot.plot_date(x_data, y_data, '-')
-
-def update(frame):
-    x_data.append(datetime.now())
-    y_data.append(randrange(0, 100))
-    line.set_data(x_data, y_data)
-    figure.gca().relim()
-    figure.gca().autoscale_view()
-    return line,
-
-animation = FuncAnimation(figure, update, interval=200)
+Nombre_infecte=[]                                                               #Liste définie par : le premier terme est le temps et 
+d=0                                                                             #deuxième terme est le nombre d'infecté à cet instant
+for i in L:                                                         
+    if i.state==1:
+        d+=1
+Nombre_infecte.append([0,d])
+temps, infecte = [], []
+temps.append(Nombre_infecte[0][0])
+infecte.append(Nombre_infecte[0][1])
+pyplot.scatter(temps,infecte)
 
 ##----------------------- SIMULATION ------------------------##
 
