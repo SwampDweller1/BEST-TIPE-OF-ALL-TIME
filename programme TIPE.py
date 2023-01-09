@@ -48,7 +48,7 @@ class Player(pygame.sprite.Sprite):                                             
         a=self.rect.x-M[0].rect.x
         b=self.rect.y-M[0].rect.y                                               # Gestion des mouvement                                             
         vitesse = b/a                   
-        if np.abs(a)<10 and np.abs(b)<10:                                         #Déplacer le piéton en quarantaine dès qu'il est trop proche du PTI
+        if np.abs(a)<7 and np.abs(b)<7:                                         #Déplacer le piéton en quarantaine dès qu'il est trop proche du PTI
             (self.rect.x,self.rect.y)=(randint(700,830),randint(20,130))
         self.rect.x += testx(a)
         self.rect.y += testx(b)*vitesse
@@ -60,8 +60,8 @@ class Player(pygame.sprite.Sprite):                                             
 
 ##----------------------- FONCTIONS ----------------------------##
 
-image = pygame.image.load("Shibuya.PNG")                                        # Importation image de fond
-image_rouge = pygame.image.load("Shibuyared.png")                               # Importation image rouge
+image = pygame.image.load("Interieur.png")                                        # Importation image de fond
+image_rouge = pygame.image.load("Interieurred.png")                               # Importation image rouge
 pixel = np.zeros((587 , 850))                                                   # Taille de l'image
 for i in range(359):
     for j in range(512):
@@ -90,7 +90,6 @@ def ifcollide_running(N):
     while i<len(N):
         if N[i].collide()==True:                                                #Si N[i] est sur un pixel rouge lors de la simulation :
             (N[i].rect.x,N[i].rect.y)=V[i]                                      #     on le fait revenir à sa position précédente
-            N[i].velocity= randint(-1,1)
         i=i+1
 
 def position_save(N):                                                           #Sauvegarde de la position des piétons dans une liste
@@ -124,7 +123,6 @@ Nombre_infecte.append([0,d])
 temps, infecte = [], []
 temps.append(Nombre_infecte[0][0])
 infecte.append(Nombre_infecte[0][1])
-pyplot.scatter(temps,infecte)
 
 ##----------------------- SIMULATION ------------------------##
 
@@ -134,6 +132,7 @@ while run:                                                                      
         V=position_save(L)                                                      # pour éviter que le piéton soit trop proche de la position problématique
     window.blit(image,(0,0))                                                    # Importation de l'image de fond
     window.blit(text,(717,533))
+    nb_infecte=0                                                                #Initialisation du nombre d'infecté à 0 à chaque tour de boucle
     for i in L:                                                                 # Gestion du piéton au cours de la simulation
         if i.rect.x>680:
             window.blit(i.image,i.rect)
@@ -142,6 +141,14 @@ while run:                                                                      
             ifcollide_running(L)
             window.blit(i.image,i.rect)
             '''interactions_pt(L)'''
+                                                         
+        if i.state==1:
+            nb_infecte+=1
+    Nombre_infecte.append([k,nb_infecte])
+    print(Nombre_infecte)
+    temps.append(Nombre_infecte[-1][0])
+    infecte.append(Nombre_infecte[-1][1])
+
     k=k+1
     for i in M:                                                                 # Gestion des points d'intérêt au cours de la simulation
         window.blit(i.image,i.rect)
@@ -160,5 +167,6 @@ while run:                                                                      
             print("---- Fin de la simulation -----")
             pygame.quit()
 
+pyplot.scatter(temps,infecte)
 pyplot.show()
 
