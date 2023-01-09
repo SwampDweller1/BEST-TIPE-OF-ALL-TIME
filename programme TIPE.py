@@ -48,9 +48,10 @@ class Player(pygame.sprite.Sprite):                                             
         a=self.rect.x-M[0].rect.x
         b=self.rect.y-M[0].rect.y                                               # Gestion des mouvement                                             
         vitesse = b/a                   
-        p,q=direction(L,M)
-        self.rect.x += testx(p)
-        self.rect.y += testx(p)*vitesse
+        if np.abs(a)<10 and np.abs(b)<10:                                         #Déplacer le piéton en quarantaine dès qu'il est trop proche du PTI
+            (self.rect.x,self.rect.y)=(randint(700,830),randint(20,130))
+        self.rect.x += testx(a)
+        self.rect.y += testx(b)*vitesse
                                                                                 # utilisation du modèle des fces centrales
     def draw(self):
         self.draw.player()                                                      # Dessiner le piéton
@@ -98,16 +99,6 @@ def position_save(N):                                                           
         V.append((i.rect.x,i.rect.y))
     return(V)
 position_save(L)
-
-def direction(L,M):                                                             #Comparaison entre la position des piétons et le PTI
-    u=M[0]
-    for i in range(len(L)):
-        a=L[i].rect.x-u.rect.x
-        b=L[i].rect.y-u.rect.y
-        if np.abs(a)<10 and np.abs(b)<10:                                         #Déplacer le piéton en quarantaine dès qu'il est trop proche du PTI
-            (L[i].rect.x,L[i].rect.y)=(randint(700,830),randint(20,130))
-    return a,b
-direction(L,M)
 
 def interactions_pt(L):                                                         # Modélise les interactions de répultions entre piétons
     A=10
