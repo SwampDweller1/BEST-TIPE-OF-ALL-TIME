@@ -106,7 +106,7 @@ def direction(L,M):                                                             
     for i in range(len(L)):
         a=L[i].rect.x-u.rect.x
         b=L[i].rect.y-u.rect.y
-        if np.abs(a)<5 and np.abs(b)<5:                                         #Supprime le piéton dès qu'il est trop proche du PTI
+        if np.abs(a)<10 and np.abs(b)<10:                                         #Supprime le piéton dès qu'il est trop proche du PTI
             (L[i].rect.x,L[i].rect.y)=(randint(700,830),randint(20,130))
     return a,b
 direction(L,M)
@@ -125,12 +125,25 @@ text = smallfont.render('Quitter' , True , (255,255,255))                       
 
 ##----------------------- INITIALISATION DES GRAPHES ------------------------##
 
-'''import subprocess
-filename = 'Graphes.py'
-with open(filename, 'w') as f:
-         p = subprocess.Popen('ls',shell=True,stdout=f,)
-p.wait()
-print (open(filename, 'r').read())'''
+from datetime import datetime
+from matplotlib import pyplot
+from matplotlib.animation import FuncAnimation
+from random import randrange
+
+x_data, y_data = [], []
+
+figure = pyplot.figure()
+line, = pyplot.plot_date(x_data, y_data, '-')
+
+def update(frame):
+    x_data.append(datetime.now())
+    y_data.append(randrange(0, 100))
+    line.set_data(x_data, y_data)
+    figure.gca().relim()
+    figure.gca().autoscale_view()
+    return line,
+
+animation = FuncAnimation(figure, update, interval=200)
 
 ##----------------------- SIMULATION ------------------------##
 
@@ -147,7 +160,7 @@ while run:                                                                      
             i.deplacement()
             ifcollide_running(L)
             window.blit(i.image,i.rect)
-            interactions_pt(L)
+            '''interactions_pt(L)'''
     k=k+1
     for i in M:                                                                 # Gestion des points d'intérêt au cours de la simulation
         window.blit(i.image,i.rect)
@@ -165,4 +178,6 @@ while run:                                                                      
             run=False
             print("---- Fin de la simulation -----")
             pygame.quit()
+
+pyplot.show()
 
