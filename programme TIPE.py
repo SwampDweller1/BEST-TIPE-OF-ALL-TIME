@@ -119,10 +119,15 @@ d=0                                                                             
 for i in L:                                                         
     if i.state==1:
         d+=1
-Nombre_infecte.append([0,d])
+Nombre_infecte.append([0,d])                                                 
 temps, infecte = [], []
-temps.append(Nombre_infecte[0][0])
+temps.append(Nombre_infecte[0][0])                                              #Initialisation des listes à l'instant initial
 infecte.append(Nombre_infecte[0][1])
+
+def contagion(i):
+    for j in L:
+        if j!=i and j.rect.x-i.rect.x<10 and j.rect.y-i.rect.y<10 and i.state==1:
+            j.image = pygame.image.load('cerclePIETONinfecte.png')
 
 ##----------------------- SIMULATION ------------------------##
 
@@ -141,11 +146,11 @@ while run:                                                                      
             ifcollide_running(L)
             window.blit(i.image,i.rect)
             '''interactions_pt(L)'''
+            contagion(i)
                                                          
         if i.state==1:
             nb_infecte+=1
     Nombre_infecte.append([k,nb_infecte])
-    print(Nombre_infecte)
     temps.append(Nombre_infecte[-1][0])
     infecte.append(Nombre_infecte[-1][1])
 
@@ -167,6 +172,6 @@ while run:                                                                      
             print("---- Fin de la simulation -----")
             pygame.quit()
 
-pyplot.scatter(temps,infecte)
+pyplot.scatter(temps,infecte,s=4)
 pyplot.show()
 
