@@ -35,10 +35,10 @@ class PTI(pygame.sprite.Sprite):                                                
 class Player(pygame.sprite.Sprite):                                             #Création de la classe des piétons
     def __init__(self):
         super().__init__()
-        self.state=randint(0,1)
+        self.state=randint(0,1)*10
         if self.state==0:
             self.image = pygame.image.load('cerclePIETON.png')
-        else:
+        if self.state==10:
             self.image = pygame.image.load('cerclePIETONinfecte.png')
         self.rect = self.image.get_rect()
         self.rect.x = randint(350,450)                                           #Position initial
@@ -117,7 +117,7 @@ from datetime import datetime
 Nombre_infecte=[]                                                               #Liste définie par : le premier terme est le temps et 
 d=0                                                                             #deuxième terme est le nombre d'infecté à cet instant
 for i in L:                                                         
-    if i.state==1:
+    if i.state==10:
         d+=1
 Nombre_infecte.append([0,d])                                                 
 temps, infecte = [], []
@@ -126,8 +126,10 @@ infecte.append(Nombre_infecte[0][1])
 
 def contagion(i):
     for j in L:
-        if j!=i and j.rect.x-i.rect.x<10 and j.rect.y-i.rect.y<10 and i.state==1:
-            j.image = pygame.image.load('cerclePIETONinfecte.png')
+        if j!=i and j.rect.x-i.rect.x<10 and j.rect.y-i.rect.y<10 and j.state==10 and i.state!=10:
+            i.state+=1
+        if i.state==10:
+            i.image = pygame.image.load('cerclePIETONinfecte.png')
 
 ##----------------------- SIMULATION ------------------------##
 
@@ -148,7 +150,7 @@ while run:                                                                      
             '''interactions_pt(L)'''
             contagion(i)
                                                          
-        if i.state==1:
+        if i.state==10:
             nb_infecte+=1
     Nombre_infecte.append([k,nb_infecte])
     temps.append(Nombre_infecte[-1][0])
@@ -172,6 +174,6 @@ while run:                                                                      
             print("---- Fin de la simulation -----")
             pygame.quit()
 
-pyplot.scatter(temps,infecte,s=4)
+pyplot.plot(temps,infecte)
 pyplot.show()
 
