@@ -6,16 +6,12 @@ import matplotlib.pyplot as pyplot
 from matplotlib.animation import FuncAnimation
 
 ##----------------- FONCTIONS PREALABLES --------------------##
-def testx(a):
+
+def test(a):
     if a>0:
         return -1
     elif a<=0:
         return 1
-def testy(b):
-    if b>0:
-        return (-2)
-    elif b<=0:
-        return 2
 
 ##-------------------- INITIALISATION -----------------------##
 pygame.init()
@@ -41,17 +37,21 @@ class Player(pygame.sprite.Sprite):                                             
         if self.state==10:
             self.image = pygame.image.load('cerclePIETONinfecte.png')
         self.rect = self.image.get_rect()
-        self.rect.x = randint(350,450)                                           #Position initial
-        self.rect.y = randint(350,450)
+        self.rect.x = randint(250,450)                                           #Position initial
+        self.rect.y = randint(100,550)
 
     def deplacement(self):
         a=self.rect.x-M[0].rect.x
-        b=self.rect.y-M[0].rect.y                                               # Gestion des mouvement                                             
-        vitesse = b/a                   
+        b=self.rect.y-M[0].rect.y                                               # Gestion des mouvement            
         if np.abs(a)<7 and np.abs(b)<7:                                         #Déplacer le piéton en quarantaine dès qu'il est trop proche du PTI
             (self.rect.x,self.rect.y)=(randint(700,830),randint(20,130))
-        self.rect.x += testx(a)
-        self.rect.y += testx(b)*vitesse
+        elif np.abs(a)<2:                                                           
+            self.rect.y += test(b)
+        elif np.abs(b)<2: 
+            self.rect.x += test(a)
+        else:
+            self.rect.x += test(a)
+            self.rect.y += test(b)
                                                                                 # utilisation du modèle des fces centrales
     def draw(self):
         self.draw.player()                                                      # Dessiner le piéton
@@ -61,7 +61,7 @@ class Player(pygame.sprite.Sprite):                                             
 ##----------------------- FONCTIONS ----------------------------##
 
 image = pygame.image.load("Interieur.png")                                        # Importation image de fond
-image_rouge = pygame.image.load("Interieurred.png")                               # Importation image rouge
+image_rouge = pygame.image.load("fondtest.png")                               # Importation image rouge
 pixel = np.zeros((587 , 850))                                                   # Taille de l'image
 for i in range(359):
     for j in range(512):
@@ -100,8 +100,8 @@ def position_save(N):                                                           
 position_save(L)
 
 def interactions_pt(L):                                                         # Modélise les interactions de répultions entre piétons
-    A=10
-    B=-3
+    A=8
+    B=-20
     for i in L:
         for j in range(len(L)):
             if L[j]!=i:
@@ -124,7 +124,7 @@ temps, infecte = [], []
 temps.append(Nombre_infecte[0][0])                                              #Initialisation des listes à l'instant initial
 infecte.append(Nombre_infecte[0][1])
 
-def contagion(i):
+def contagion(i):                                                               #Fonction de contagion
     for j in L:
         if j!=i and j.rect.x-i.rect.x<10 and j.rect.y-i.rect.y<10 and j.state==10 and i.state!=10:
             i.state+=1
@@ -147,7 +147,7 @@ while run:                                                                      
             i.deplacement()
             ifcollide_running(L)
             window.blit(i.image,i.rect)
-            '''interactions_pt(L)'''
+            "interactions_pt(L)"
             contagion(i)
                                                          
         if i.state==10:
@@ -174,6 +174,8 @@ while run:                                                                      
             print("---- Fin de la simulation -----")
             pygame.quit()
 
-pyplot.plot(temps,infecte)
+pyplot.title("Nombre d'infectés au cours du temps")
+pyplot.plot(temps,infecte,label="Infectés")
+pyplot.legend()
 pyplot.show()
 
