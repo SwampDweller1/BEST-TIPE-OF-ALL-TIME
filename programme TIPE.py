@@ -46,8 +46,11 @@ class Player(pygame.sprite.Sprite):                                             
         self.rect.y = randint(100,550)
 
     def deplacement(self):
-        a=self.rect.x-M[0].rect.x
-        b=self.rect.y-M[0].rect.y                                               # Gestion des mouvement            
+        '''
+        a=self.rect.x-M[D[i]].rect.x
+        b=self.rect.y-M[D[i]].rect.y                    
+        '''                           
+                                                                                # Gestion des mouvement            
         if np.abs(a)<7 and np.abs(b)<7:                                         #Déplacer le piéton en quarantaine dès qu'il est trop proche du PTI
             (self.rect.x,self.rect.y)=(randint(700,830),randint(20,130))
         elif np.abs(a)<2:                                                           
@@ -77,6 +80,12 @@ for i in range(7):
 M=[]
 for i in range(3):
     M.append(PTI())                                                             # Création d'une liste point d'interêt
+
+D={}                                                                            # Dictionnaire liant les players et listes
+for i in range(len(L)):
+    liste=[0,1,2]
+    j=choice(liste)
+    D[i]=j
 
 def ifcollide_start(N):                                                         # Tester la collision à l'instant initial
     i=0
@@ -180,17 +189,20 @@ while run:                                                                      
     window.blit(image,(0,0))                                                    # Importation de l'image de fond
     window.blit(text,(717,533))
     nb_infecte=0                                                                # Initialisation du nombre d'infecté à 0 à chaque tour de boucle
-    for i in L:                                                                 # Gestion du piéton au cours de la simulation
-        if i.rect.x>680:
-            window.blit(i.image,i.rect)
+    for i in range(len(L)):                                                                 # Gestion du piéton au cours de la simulation
+        if L[i].rect.x>680:
+            window.blit(L[i].image,L[i].rect)
         else:
-            i.deplacement()
+            j=D[i]
+            a=L[i].rect.x-M[j].rect.x
+            b=L[i].rect.y-M[j].rect.y
+            L[i].deplacement()
             ifcollide_running(L)
-            window.blit(i.image,i.rect)
+            window.blit(L[i].image,L[i].rect)
             "interactions_pt(L)"
-            contagion(i)
+            contagion(L[i])
                                                          
-        if i.state==10:
+        if L[i].state==10:
             nb_infecte+=1
     Nombre_infecte.append([k,nb_infecte])
     temps.append(Nombre_infecte[-1][0])
