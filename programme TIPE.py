@@ -25,8 +25,13 @@ class PTI(pygame.sprite.Sprite):                                                
         super().__init__()
         self.image = pygame.image.load('cerclePTI.png')
         self.rect = self.image.get_rect()
-        self.rect.x = 500
-        self.rect.y = 500
+        liste=[200,500]
+        self.rect.x = choice(liste)
+        self.rect.y = choice(liste)
+'''
+def collide(self):                                                          # Détecter la colision avec un pixel rouge
+        return  image_rouge.get_at((self.rect.x, self.rect.y))==(255, 0, 0, 255)
+'''
 
 class Player(pygame.sprite.Sprite):                                             #Création de la classe des piétons
     def __init__(self):
@@ -70,7 +75,7 @@ L=[]
 for i in range(7):
     L.append(Player())                                                          #Création d'une liste de piétons (range('Nb de piéton'))
 M=[]
-for i in range(1):
+for i in range(3):
     M.append(PTI())                                                             #Création d'une liste point d'interêt
 
 def ifcollide_start(N):                                                         #Tester la collision à l'instant initial
@@ -84,7 +89,20 @@ def ifcollide_start(N):                                                         
             i=i+1                                                               #Si N[i] n'est pas sur un pixel rouge, la boucle while va tourner à l'infini :
                                                                                 #il faut rajouter un +1 dans ce cas!
 ifcollide_start(L)
-
+'''
+def ifcollide_start_PTI(M):                                                         #Tester la collision à l'instant initial
+    i=0
+    while i<len(M):
+        if M[i].collide()==True:                                                #Si N[i] est sur un pixel rouge : on le supprime de la liste
+            M.remove(M[i])
+            M.append(Player())                                                  #S'il est sur un pixel rouge : on regénere le piéton jusqu'à ce
+                                                                                #qu'il ne soit plus sur du rouge
+        else:
+            i=i+1                                                               #Si N[i] n'est pas sur un pixel rouge, la boucle while va tourner à l'infini :
+                                                                                #il faut rajouter un +1 dans ce cas!
+                                                                                                                                                                
+ifcollide_start_PTI(M)
+'''
 def ifcollide_running(N):
     i=0
     while i<len(N):
