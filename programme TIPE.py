@@ -60,8 +60,8 @@ class Player(pygame.sprite.Sprite):                                             
 
 ##----------------------- FONCTIONS ----------------------------##
 
-image = pygame.image.load("Interieur.png")                                        # Importation image de fond
-image_rouge = pygame.image.load("fondtest.png")                               # Importation image rouge
+image = pygame.image.load("Interieur.png")                                      # Importation image de fond
+image_rouge = pygame.image.load("interieurred.png")                                 # Importation image rouge
 pixel = np.zeros((587 , 850))                                                   # Taille de l'image
 for i in range(359):
     for j in range(512):
@@ -89,7 +89,29 @@ def ifcollide_running(N):
     i=0
     while i<len(N):
         if N[i].collide()==True:                                                #Si N[i] est sur un pixel rouge lors de la simulation :
-            (N[i].rect.x,N[i].rect.y)=V[i]                                      #     on le fait revenir à sa position précédente
+            (N[i].rect.x,N[i].rect.y)=V[i]                                      # on le fait revenir à sa position précédente
+            
+            a=N[i].rect.x
+            b=N[i].rect.y
+            m=M[0].rect.x
+            if abs(b-m) <= abs(b-m)-5 and N[i].collide()==False:
+                N[i].rect.y += -5   
+            elif abs(b-m) <= abs(b-m)+5 and N[i].collide()==False:
+                N[i].rect.y += 5       
+
+            elif abs(a-m) <= abs(a-m)-5 and N[i].collide()==False:
+                N[i].rect.x += -5   
+            elif abs(a-m) <= abs(a-m)+5 and N[i].collide()==False:
+                N[i].rect.x += 5
+            else:
+                '''
+                if N[i].rect.x >= N[i].rect.y:
+                    '''       
+                N[i].rect.x += -10*test(a-m)
+                ''' 
+                else:
+                    N[i].rect.y += -20*test(b-m)'''
+                                                                   
         i=i+1
 
 def position_save(N):                                                           #Sauvegarde de la position des piétons dans une liste
