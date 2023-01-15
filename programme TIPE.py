@@ -25,13 +25,11 @@ class PTI(pygame.sprite.Sprite):                                                
         super().__init__()
         self.image = pygame.image.load('cerclePTI.png')
         self.rect = self.image.get_rect()
-        liste=[200,500]                                                         # génération de la postion aléatoirement mais définie pour éviter les pbs
+        liste=[200,550]                                                         # génération de la postion aléatoirement mais définie pour éviter les pbs
         self.rect.x = choice(liste)
         self.rect.y = choice(liste)
-'''
-def collide(self):                                                          # Détecter la colision avec un pixel rouge
+    def collide(self):                                                          # Détecter la colision avec un pixel rouge
         return  image_rouge.get_at((self.rect.x, self.rect.y))==(255, 0, 0, 255)
-'''
 
 class Player(pygame.sprite.Sprite):                                             # Création de la classe des piétons
     def __init__(self):
@@ -42,15 +40,12 @@ class Player(pygame.sprite.Sprite):                                             
         if self.state==10:
             self.image = pygame.image.load('cerclePIETONinfecte.png')
         self.rect = self.image.get_rect()
-        self.rect.x = randint(250,450)                                          # Position initial
+        self.rect.x = randint(150,550)                                          # Position initial
         self.rect.y = randint(100,550)
 
     def deplacement(self):
-        '''
         a=self.rect.x-M[D[i]].rect.x
-        b=self.rect.y-M[D[i]].rect.y                    
-        '''                           
-                                                                                # Gestion des mouvement            
+        b=self.rect.y-M[D[i]].rect.y                                            # Gestion des mouvement            
         if np.abs(a)<7 and np.abs(b)<7:                                         #Déplacer le piéton en quarantaine dès qu'il est trop proche du PTI
             (self.rect.x,self.rect.y)=(randint(700,830),randint(20,130))
         elif np.abs(a)<2:                                                           
@@ -75,11 +70,11 @@ for i in range(359):
     for j in range(512):
         pixel[i,j] = image_rouge.get_at((i,j))                                  # Le pixel détecte la couleur sur laquelle il s'assoit
 L=[]
-for i in range(7):
+for i in range(15):
     L.append(Player())                                                          # Création d'une liste de piétons (range('Nb de piéton'))
 M=[]
-for i in range(3):
-    M.append(PTI())                                                             # Création d'une liste point d'interêt
+for i in range(4):
+    M.append(PTI())                                                             # Création d'une liste point d'interêt avec i-1 PTI
 
 D={}                                                                            # Dictionnaire liant les players et listes
 for i in range(len(L)):
@@ -98,7 +93,7 @@ def ifcollide_start(N):                                                         
             i=i+1                                                               # Si N[i] n'est pas sur un pixel rouge, la boucle while va tourner à l'infini :
                                                                                 # il faut rajouter un +1 dans ce cas!
 ifcollide_start(L)
-'''
+
 def ifcollide_start_PTI(M):                                                     #Tester la collision à l'instant initial du PTI
     i=0
     while i<len(M):
@@ -111,34 +106,25 @@ def ifcollide_start_PTI(M):                                                     
                                                                                 #il faut rajouter un +1 dans ce cas!
                                                                                                                                                                 
 ifcollide_start_PTI(M)
-'''
+
 def ifcollide_running(N):
     i=0
     while i<len(N):
         if N[i].collide()==True:                                                # Si N[i] est sur un pixel rouge lors de la simulation :
-            (N[i].rect.x,N[i].rect.y)=V[i]                                      # on le fait revenir à sa position précédente
-            
-            a=N[i].rect.x
-            b=N[i].rect.y
-            m=M[0].rect.x
-            if abs(b-m) <= abs(b-m)-5 and N[i].collide()==False:                # je change légèrement la valeur de la position précédente pour qu'il évite de rester coincé sur les
-                N[i].rect.y += -5                                               # coins de table + je m'assure que la position d'arrivée n'est pas une position problématique
-            elif abs(b-m) <= abs(b-m)+5 and N[i].collide()==False:
+            (N[i].rect.x,N[i].rect.y)=V[i]                                                          # on le fait revenir à sa position précédente
+            if abs(N[i].rect.y-M[0].rect.x)<=abs(N[i].rect.y-M[0].rect.x)-5 and N[i].collide()==False:                # je change légèrement la valeur de la position précédente pour qu'il évite de rester coincé sur les
+                N[i].rect.y += -5                                                         # coins de table + je m'assure que la position d'arrivée n'est pas une position problématique
+            elif abs(N[i].rect.y-M[0].rect.x) <= abs(N[i].rect.y-M[0].rect.x)+5 and N[i].collide()==False:
                 N[i].rect.y += 5       
-
-            elif abs(a-m) <= abs(a-m)-5 and N[i].collide()==False:
+            elif abs(N[i].rect.x-M[0].rect.x) <= abs(N[i].rect.x-M[0].rect.x)-5 and N[i].collide()==False:
                 N[i].rect.x += -5   
-            elif abs(a-m) <= abs(a-m)+5 and N[i].collide()==False:
+            elif abs(N[i].rect.x-M[0].rect.x) <= abs(N[i].rect.x-M[0].rect.x)+5 and N[i].collide()==False:
                 N[i].rect.x += 5
             else:                                                               # sinon je contourne l'obstacle en partant en direction opposée au PTI 
-                '''
                 if N[i].rect.x >= N[i].rect.y:
-                    '''       
-                N[i].rect.x += -10*test(a-m)
-                ''' 
+                    N[i].rect.x += -10*test(N[i].rect.x-M[0].rect.x)
                 else:
-                    N[i].rect.y += -20*test(b-m)'''                             # contournement par le haut buggé pour l'instant
-                                                                   
+                    N[i].rect.y += -10*test(N[i].rect.y-M[0].rect.y)                                 # contournement par le haut buggé pour l'instant                                           
         i=i+1
 
 def position_save(N):                                                           # Sauvegarde de la position des piétons dans une liste
@@ -175,8 +161,8 @@ infecte.append(Nombre_infecte[0][1])
 
 def contagion(i):                                                               # Fonction de contagion
     for j in L:
-        if j!=i and j.rect.x-i.rect.x<10 and j.rect.y-i.rect.y<10 and j.state==10 and i.state!=10:
-            i.state+=1
+        if j!=i and j.rect.x-i.rect.x<5 and j.rect.y-i.rect.y<5 and j.state==10 and i.state!=10:
+            i.state+=1 #bug
         if i.state==10:
             i.image = pygame.image.load('cerclePIETONinfecte.png')
 
