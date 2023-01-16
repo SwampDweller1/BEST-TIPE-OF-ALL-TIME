@@ -70,7 +70,7 @@ for i in range(359):
     for j in range(512):
         pixel[i,j] = image_rouge.get_at((i,j))                                  # Le pixel détecte la couleur sur laquelle il s'assoit
 L=[]
-for i in range(15):
+for i in range(6):
     L.append(Player())                                                          # Création d'une liste de piétons (range('Nb de piéton'))
 M=[]
 for i in range(4):
@@ -112,19 +112,19 @@ def ifcollide_running(N):
     while i<len(N):
         if N[i].collide()==True:                                                # Si N[i] est sur un pixel rouge lors de la simulation :
             (N[i].rect.x,N[i].rect.y)=V[i]                                                          # on le fait revenir à sa position précédente
-            if abs(N[i].rect.y-M[0].rect.x)<=abs(N[i].rect.y-M[0].rect.x)-5 and N[i].collide()==False:                # je change légèrement la valeur de la position précédente pour qu'il évite de rester coincé sur les
+            if abs(N[i].rect.y-M[D[i]].rect.x)<=abs(N[i].rect.y-M[D[i]].rect.x)-5 and N[i].collide()==False:                # je change légèrement la valeur de la position précédente pour qu'il évite de rester coincé sur les
                 N[i].rect.y += -5                                                         # coins de table + je m'assure que la position d'arrivée n'est pas une position problématique
-            elif abs(N[i].rect.y-M[0].rect.x) <= abs(N[i].rect.y-M[0].rect.x)+5 and N[i].collide()==False:
+            elif abs(N[i].rect.y-M[D[i]].rect.x) <= abs(N[i].rect.y-M[D[i]].rect.x)+5 and N[i].collide()==False:
                 N[i].rect.y += 5       
-            elif abs(N[i].rect.x-M[0].rect.x) <= abs(N[i].rect.x-M[0].rect.x)-5 and N[i].collide()==False:
+            elif abs(N[i].rect.x-M[D[i]].rect.x) <= abs(N[i].rect.x-M[D[i]].rect.x)-5 and N[i].collide()==False:
                 N[i].rect.x += -5   
-            elif abs(N[i].rect.x-M[0].rect.x) <= abs(N[i].rect.x-M[0].rect.x)+5 and N[i].collide()==False:
+            elif abs(N[i].rect.x-M[D[i]].rect.x) <= abs(N[i].rect.x-M[D[i]].rect.x)+5 and N[i].collide()==False:
                 N[i].rect.x += 5
             else:                                                               # sinon je contourne l'obstacle en partant en direction opposée au PTI 
                 if N[i].rect.x >= N[i].rect.y:
-                    N[i].rect.x += -10*test(N[i].rect.x-M[0].rect.x)
+                    N[i].rect.x += -10*test(N[i].rect.x-M[D[i]].rect.x)
                 else:
-                    N[i].rect.y += -10*test(N[i].rect.y-M[0].rect.y)                                 # contournement par le haut buggé pour l'instant                                           
+                    N[i].rect.y += -10*test(N[i].rect.y-M[D[i]].rect.y)                                 # contournement par le haut buggé pour l'instant                                           
         i=i+1
 
 def position_save(N):                                                           # Sauvegarde de la position des piétons dans une liste
@@ -134,16 +134,18 @@ def position_save(N):                                                           
     return(V)
 position_save(L)
 
-def interactions_pt(L):                                                         # Modélise les interactions de répultions entre piétons
-    A=8
+def interactions_pt(i):                                                         # Modélise les interactions de répultions entre piétons
+    A=1.2
     B=-20
-    for i in L:
-        for j in range(len(L)):
-            if L[j]!=i:
-                (L[j].rect.x,L[j].rect.y) = (L[j].rect.x+A*np.exp(abs(i.rect.x-L[j].rect.x)/B),L[j].rect.y+A*np.exp(abs(i.rect.y-L[j].rect.y)/B))
+    for j in range(len(L)):
+        if L[j]!=i:
+            (i.rect.x,i.rect.y) = (i.rect.x+A*np.exp(abs(i.rect.x-L[j].rect.x)/B),i.rect.y+A*np.exp(abs(i.rect.y-L[j].rect.y)/B))
 
 smallfont = pygame.font.SysFont('stencil',25)
 text = smallfont.render('Quitter' , True , (255,255,255))                       # Créer un bouton quitter
+
+k=0
+font = pygame.font.SysFont("stencil", 30)
 
 
 ##----------------------- CONTAGION VIRUS ------------------------##
@@ -161,21 +163,22 @@ infecte.append(Nombre_infecte[0][1])
 
 def contagion(i):                                                               # Fonction de contagion
     for j in L:
-        if j!=i and j.rect.x-i.rect.x<5 and j.rect.y-i.rect.y<5 and j.state==10 and i.state!=10:
-            i.state+=1 #bug
+        if j!=i and abs(j.rect.x-i.rect.x)<15 and abs(j.rect.y-i.rect.y)<15 and j.state==10 and i.state!=10:
+            i.state+=1
         if i.state==10:
             i.image = pygame.image.load('cerclePIETONinfecte.png')
 
 ##----------------------- SIMULATION ------------------------##
 
-k=0
 while run:                                                                      # Boucle infinie pour notre simulation
-    if k%20==0 or k==0:                                                         # On actualise la liste de position tous les 200 tours
+    if k%10==0 or k==0:                                                         # On actualise la liste de position tous les 200 tours
         V=position_save(L)                                                      # pour éviter que le piéton soit trop proche de la position problématique
     window.blit(image,(0,0))                                                    # Importation de l'image de fond
     window.blit(text,(717,533))
+    afficher = font.render(str(k), 1, (0, 0, 0))                                # On affiche le temps qui s'écoule
+    window.blit(afficher, (6,32))
     nb_infecte=0                                                                # Initialisation du nombre d'infecté à 0 à chaque tour de boucle
-    for i in range(len(L)):                                                                 # Gestion du piéton au cours de la simulation
+    for i in range(len(L)):                                                     # Gestion du piéton au cours de la simulation
         if L[i].rect.x>680:
             window.blit(L[i].image,L[i].rect)
         else:
@@ -185,10 +188,9 @@ while run:                                                                      
             L[i].deplacement()
             ifcollide_running(L)
             window.blit(L[i].image,L[i].rect)
-            "interactions_pt(L)"
-            contagion(L[i])
-                                                         
-        if L[i].state==10:
+            interactions_pt(L[i])
+            contagion(L[i])                                           
+        if L[i].state==10:                                  # On recalcule à chaque itérations le nombre d'infectés 
             nb_infecte+=1
     Nombre_infecte.append([k,nb_infecte])
     temps.append(Nombre_infecte[-1][0])
